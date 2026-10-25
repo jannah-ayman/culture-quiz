@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Cultural Profile</title>
+<style>
+:root{--ink:#1a1a1a;--paper:#f3f3f3;--blue:#006bff;--lav:#a097c0;--peri:#a4a0ff;--mauve:#5f5263;--line:#d9d9d9;--white:#fff}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Calibri,"Segoe UI",Tahoma,Arial,sans-serif;font-size:18px;line-height:1.5;min-height:100vh;overflow-x:hidden}
+.serif{font-family:Cambria,Georgia,"Times New Roman",serif}
+body::before,body::after{content:"";position:fixed;border-radius:50%;z-index:-1;pointer-events:none}
+body::before{width:420px;height:420px;background:var(--blue);top:-190px;inset-inline-end:-120px}
+body::after{width:260px;height:260px;background:var(--peri);bottom:-110px;inset-inline-start:-80px;opacity:.8}
+.wrap{max-width:760px;margin:0 auto;padding:20px 20px 60px}
+.top{display:flex;justify-content:flex-end;gap:8px;margin-bottom:8px}
+.lang button{font:inherit;font-size:15px;padding:6px 14px;border-radius:999px;border:2px solid var(--ink);background:var(--white);cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--white)}
+h1,h2,h3{font-family:Cambria,Georgia,serif;line-height:1.15;margin:0}
+h1{font-size:clamp(36px,8vw,56px)}
+h2{font-size:clamp(26px,5vw,34px)}
+.card{background:var(--white);border-radius:22px;padding:24px;margin-top:18px;box-shadow:0 1px 0 var(--line)}
+.btn{font:inherit;font-weight:700;font-size:18px;border:0;border-radius:999px;padding:14px 32px;background:var(--blue);color:var(--white);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+button:focus-visible{outline:3px solid var(--peri);outline-offset:3px}
+.hero{padding:40px 0 10px}
+.hero p{max-width:34em;font-size:20px}
+.progress{height:10px;background:var(--line);border-radius:99px;overflow:hidden;margin:18px 0 6px}
+.progress i{display:block;height:100%;background:var(--blue);border-radius:99px;transition:width .25s}
+.count{font-size:15px;color:var(--mauve)}
+.prompt{font-size:16px;color:var(--mauve);margin:22px 0 4px}
+.stmt{font-size:clamp(26px,5.5vw,36px);margin:0 0 20px}
+.opts{display:grid;gap:10px}
+.opt{font:inherit;text-align:start;background:var(--paper);border:2px solid transparent;border-radius:16px;padding:14px 18px;cursor:pointer;display:flex;gap:14px;align-items:center}
+.opt b{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--white);font-size:15px;flex:none}
+.opt:hover{border-color:var(--lav)}
+.opt[aria-pressed="true"]{background:var(--blue);color:var(--white)}
+.opt[aria-pressed="true"] b{background:var(--white);color:var(--blue)}
+.nav{display:flex;justify-content:space-between;margin-top:20px}
+.radar{display:block;width:100%;max-width:460px;margin:0 auto;height:auto}
+.legend{display:flex;gap:20px;justify-content:center;font-size:16px;margin-top:6px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.sw{width:14px;height:14px;border-radius:50%;display:inline-block}
+.dim h3{font-size:24px;margin-bottom:2px}
+.lvl{display:inline-block;font-size:15px;font-weight:700;padding:3px 12px;border-radius:99px;background:var(--peri);margin-inline-start:8px;vertical-align:middle}
+.row{display:grid;grid-template-columns:64px 1fr 48px;gap:10px;align-items:center;margin:8px 0;font-size:16px}
+.track{height:16px;border-radius:99px;background:var(--line);overflow:hidden;position:relative}
+.track i{position:absolute;inset-block:0;inset-inline-start:0;border-radius:99px}
+.ends{display:flex;justify-content:space-between;font-size:14px;color:var(--mauve);margin:2px 0 10px}
+.dim p{margin:8px 0 0}
+.vs{font-weight:700}
+.sum{font-size:20px}
+.note{font-size:15px;color:var(--mauve);margin-top:24px}
+[dir="rtl"] .row{direction:rtl}
+@media (prefers-reduced-motion:reduce){.progress i{transition:none}}
+@media print{body::before,body::after,.top,.nav,.again{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top lang" role="group" aria-label="Language">
+    <button id="bEn" aria-pressed="true">English</button>
+    <button id="bAr" aria-pressed="false">العربية</button>
+  </div>
+  <main id="app" aria-live="polite"></main>
+</div>
+
+<script>
+/* ---------- Data ---------- */
+const DIMS=['pd','ind','ach','uai','lto','ivr'];
+const EGYPT={pd:80,ind:13,ach:55,uai:55,lto:22,ivr:0};
+
+// rev = true means the answer is reversed (6 - answer) before scoring
+const Q=[
+{d:'pd',r:0,en:"I’d rather someone else decide who sits where or speaks first.",ar:"أفضّل أن يقرّر شخص آخر من يجلس أين ومن يتحدث أولًا."},
+{d:'ivr',r:0,en:"I buy small things on impulse.",ar:"أشتري أشياء صغيرة بدافع اللحظة."},
+{d:'lto',r:1,en:"If it worked before, don’t change it.",ar:"ما دام الشيء قد نجح من قبل، فلا داعي لتغييره."},
+{d:'ach',r:0,en:"Free time feels wasted if it isn’t leading anywhere.",ar:"أشعر أن وقت الفراغ ضائع إذا لم يقدّني إلى شيء."},
+{d:'ind',r:1,en:"When I have good news, my family hears it first.",ar:"عندما يكون عندي خبر سار، تكون عائلتي أول من يعرفه."},
+{d:'uai',r:0,en:"A blank page worries me more than one with a template.",ar:"الصفحة الفارغة تقلقني أكثر من صفحة فيها قالب جاهز."},
+{d:'pd',r:1,en:"I’d ask a question in class even if it might sound silly.",ar:"أسأل في الصف حتى لو بدا سؤالي سخيفًا."},
+{d:'lto',r:1,en:"When things go wrong, I blame luck more than effort.",ar:"عندما تسوء الأمور، ألوم الحظ أكثر من الجهد."},
+{d:'ach',r:0,en:"I like knowing where I rank.",ar:"أحب أن أعرف ترتيبي بين الآخرين."},
+{d:'ivr',r:1,en:"I save the best things for a special occasion.",ar:"أحتفظ بأفضل الأشياء لمناسبة خاصة."},
+{d:'uai',r:1,en:"Surprises make a day better.",ar:"المفاجآت تجعل يومي أفضل."},
+{d:'ind',r:0,en:"I like my things to be only mine.",ar:"أحب أن تكون أشيائي ملكي وحدي."},
+{d:'lto',r:0,en:"I’d rather save now and enjoy later.",ar:"أفضّل أن أدّخر الآن وأستمتع لاحقًا."},
+{d:'pd',r:0,en:"I use someone’s title even after they tell me not to.",ar:"أستخدم لقب الشخص حتى بعد أن يطلب مني ألا أفعل."},
+{d:'ach',r:1,en:"I’d choose fixed hours over great pay with long hours.",ar:"أفضّل ساعات عمل ثابتة على راتب ممتاز مع ساعات طويلة."},
+{d:'uai',r:0,en:"I double-check things before I commit to them.",ar:"أراجع الأمور مرتين قبل أن ألتزم بها."},
+{d:'ivr',r:0,en:"I laugh out loud in public without thinking about it.",ar:"أضحك بصوت عالٍ في الأماكن العامة دون تفكير."},
+{d:'ind',r:1,en:"I’d feel odd eating a big meal alone.",ar:"سأشعر بغرابة وأنا آكل وجبة كبيرة وحدي."}
+];
+
+const TXT={
+en:{
+ dir:'ltr',title:"Your cultural profile",
+ intro:"18 short statements, about 3 minutes. See where you land on Hofstede’s six dimensions and how that compares with Egypt.",
+ start:"Start",prompt:"How much do you agree?",back:"Back",
+ scale:["Strongly disagree","Disagree","Neutral","Agree","Strongly agree"],
+ resTitle:"Your result",you:"You",egypt:"Egypt",lvl:{low:"Low",mid:"Middle",high:"High"},
+ radarTitle:"You compared with Egypt",
+ same:"About the same as Egypt",higher:n=>`${n} points higher than Egypt`,lower:n=>`${n} points lower than Egypt`,
+ closest:(a,b)=>`You are closest to Egypt on ${a} and furthest on ${b}.`,
+ again:"Take it again",
+ disc:"This is a simplified self-check for fun, not a validated test. Three statements per dimension only give a rough picture. Egypt’s scores are national averages from Hofstede Insights (Almutairi, Heller & Yen, 2020), so they don’t describe every Egyptian. Neither does yours describe every person from your own country.",
+ dims:{
+  pd:{n:"Power Distance",s:"Power Distance",lo:"Flat",hi:"Hierarchical",
+   low:"You prefer flat structures. You’re comfortable questioning authority and expect leaders to explain their decisions.",
+   mid:"You’re flexible. You respect hierarchy when it helps, but you speak up when something seems wrong.",
+   high:"You’re comfortable with clear hierarchy. You value respect for seniority and expect decisions to come from the top."},
+  ind:{n:"Individualism vs. Collectivism",s:"Individualism",lo:"Group (we)",hi:"Individual (I)",
+   low:"You’re group-oriented. Family and close relationships shape your choices, and loyalty to your group matters more than personal freedom.",
+   mid:"You balance “we” and “I”. You value close ties and also your own space.",
+   high:"You’re independence-oriented. You follow your own goals and choices and value personal freedom."},
+  ach:{n:"Achievement and Success",s:"Achievement",lo:"Cooperation",hi:"Achievement",
+   low:"You value cooperation, balance and caring for others over winning.",
+   mid:"You balance ambition with quality of life.",
+   high:"You’re achievement-driven. You value ambition, competition and visible success."},
+  uai:{n:"Uncertainty Avoidance",s:"Uncertainty",lo:"Comfortable with ambiguity",hi:"Needs rules",
+   low:"You’re comfortable with ambiguity. You adapt, experiment and don’t need every detail up front.",
+   mid:"You like some structure but cope well with surprises.",
+   high:"You like clear rules, plans and predictability, and feel uneasy when things are vague."},
+  lto:{n:"Long-Term Orientation",s:"Long-term",lo:"Tradition, quick results",hi:"Future, adapting",
+   low:"You’re tradition-oriented. You respect established ways, look for quick results and tend to see some truths as absolute.",
+   mid:"You respect tradition but adapt when needed.",
+   high:"You’re pragmatic and future-focused. You adapt traditions, save and invest for the long term, and see truth as depending on context."},
+  ivr:{n:"Indulgence vs. Restraint",s:"Indulgence",lo:"Restrained",hi:"Indulgent",
+   low:"You’re restrained. You control impulses, put duty first and care about social norms.",
+   mid:"You balance enjoying life with keeping to norms.",
+   high:"You’re indulgent. You value fun, leisure and freely enjoying life."}
+ }},
+ar:{
+ dir:'rtl',title:"ملفّك الثقافي",
+ intro:"18 عبارة قصيرة، حوالي 3 دقائق. اعرف أين تقع على أبعاد هوفستد الستة وكيف يقارن ذلك بمصر.",
+ start:"ابدأ",prompt:"إلى أي مدى توافق؟",back:"السابق",
+ scale:["لا أوافق بشدة","لا أوافق","محايد","أوافق","أوافق بشدة"],
+ resTitle:"نتيجتك",you:"أنت",egypt:"مصر",lvl:{low:"منخفض",mid:"متوسط",high:"مرتفع"},
+ radarTitle:"أنت مقارنةً بمصر",
+ same:"قريب من مصر",higher:n=>`أعلى من مصر بمقدار ${n} نقطة`,lower:n=>`أقل من مصر بمقدار ${n} نقطة`,
+ closest:(a,b)=>`أنت الأقرب إلى مصر في «${a}» والأبعد عنها في «${b}».`,
+ again:"أعد الاختبار",
+ disc:"هذا اختبار مبسّط للتسلية وليس اختبارًا علميًا معتمدًا. ثلاث عبارات لكل بُعد تعطي صورة تقريبية فقط. درجات مصر متوسطات وطنية من Hofstede Insights (Almutairi, Heller & Yen, 2020)، ولذلك لا تصف كل مصري، كما أن نتيجتك لا تصف كل شخص من بلدك.",
+ dims:{
+  pd:{n:"المسافة من السلطة",s:"المسافة من السلطة",lo:"مسطّحة",hi:"هرمية",
+   low:"تفضّل الهياكل المسطّحة. ترتاح لمناقشة أصحاب السلطة وتتوقع من القادة أن يشرحوا قراراتهم.",
+   mid:"أنت مرن. تحترم التدرّج عندما يفيد، لكنك تتكلم حين ترى خطأً.",
+   high:"ترتاح للتدرّج الواضح. تقدّر احترام الأقدمية وتتوقع أن تأتي القرارات من الأعلى."},
+  ind:{n:"الفردية مقابل الجماعية",s:"الفردية",lo:"الجماعة (نحن)",hi:"الفرد (أنا)",
+   low:"أنت تميل إلى الجماعة. العائلة والعلاقات القريبة تشكّل اختياراتك، وولاؤك لجماعتك أهم من حريتك الشخصية.",
+   mid:"توازن بين «نحن» و«أنا». تقدّر الروابط القريبة وتقدّر مساحتك الخاصة أيضًا.",
+   high:"أنت تميل إلى الاستقلال. تتبع أهدافك واختياراتك وتقدّر الحرية الشخصية."},
+  ach:{n:"الدافع للإنجاز والنجاح",s:"الإنجاز",lo:"التعاون",hi:"الإنجاز",
+   low:"تقدّر التعاون والتوازن ورعاية الآخرين أكثر من الفوز.",
+   mid:"توازن بين الطموح وجودة الحياة.",
+   high:"أنت مدفوع بالإنجاز. تقدّر الطموح والمنافسة والنجاح الظاهر."},
+  uai:{n:"تجنّب عدم اليقين",s:"عدم اليقين",lo:"يرتاح للغموض",hi:"يحتاج قواعد",
+   low:"ترتاح للغموض. تتكيّف وتجرّب ولا تحتاج كل التفاصيل من البداية.",
+   mid:"تحب بعض الترتيب لكنك تتعامل مع المفاجآت جيدًا.",
+   high:"تحب القواعد الواضحة والخطط والقدرة على التوقّع، وتنزعج عندما تكون الأمور غامضة."},
+  lto:{n:"التوجّه طويل المدى",s:"طويل المدى",lo:"التقاليد والنتائج السريعة",hi:"المستقبل والتكيّف",
+   low:"أنت تميل إلى التقاليد. تحترم الطرق المعتادة وتبحث عن نتائج سريعة وترى بعض الحقائق مطلقة.",
+   mid:"تحترم التقاليد لكنك تتكيّف عند الحاجة.",
+   high:"أنت عملي ومتّجه نحو المستقبل. تكيّف التقاليد وتدّخر وتستثمر للمدى الطويل، وترى أن الحقيقة تعتمد على السياق."},
+  ivr:{n:"التساهل مقابل التقييد",s:"التساهل",lo:"مقيَّد",hi:"متساهل",
+   low:"أنت مقيَّد. تضبط اندفاعاتك وتضع الواجب أولًا وتهتم بالأعراف الاجتماعية.",
+   mid:"توازن بين الاستمتاع بالحياة والالتزام بالأعراف.",
+   high:"أنت متساهل. تقدّر المرح والترفيه والاستمتاع بالحياة بحرية."}
+ }}
+};
+
+/* ---------- State ---------- */
+let lang='en',step=-1,answers=new Array(Q.length).fill(null);
+const app=document.getElementById('app');
+const t=()=>TXT[lang];
+
+/* ---------- Scoring ---------- */
+function scores(){
+  const sum={},cnt={};DIMS.forEach(d=>{sum[d]=0;cnt[d]=0});
+  Q.forEach((q,i)=>{const a=answers[i];sum[q.d]+=q.r?6-a:a;cnt[q.d]++});
+  const out={};DIMS.forEach(d=>out[d]=Math.round((sum[d]-cnt[d])/(cnt[d]*4)*100));
+  return out;
+}
+const level=p=>p<=33?'low':p<=66?'mid':'high';
+
+/* ---------- Views ---------- */
+function setLang(l){
+  lang=l;document.documentElement.lang=l;document.documentElement.dir=t().dir;
+  document.getElementById('bEn').setAttribute('aria-pressed',l==='en');
+  document.getElementById('bAr').setAttribute('aria-pressed',l==='ar');
+  render();
+}
+function render(){step<0?intro():step<Q.length?question():results();}
+
+function intro(){
+  app.innerHTML=`<section class="hero"><h1>${t().title}</h1><p>${t().intro}</p><p><button class="btn" id="go">${t().start}</button></p></section>`;
+  document.getElementById('go').onclick=()=>{step=0;render()};
+}
+
+function question(){
+  const q=Q[step],T=t(),pct=Math.round(step/Q.length*100);
+  app.innerHTML=`<div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${Q.length}" aria-valuenow="${step}"><i style="width:${pct}%"></i></div>
+  <div class="count">${step+1} / ${Q.length}</div>
+  <div class="card"><div class="prompt">${T.prompt}</div><h2 class="stmt">${q[lang]}</h2>
+  <div class="opts">${[5,4,3,2,1].map(v=>`<button class="opt" data-v="${v}" aria-pressed="${answers[step]===v}"><b>${v}</b>${T.scale[v-1]}</button>`).join('')}</div>
+  <div class="nav"><button class="btn ghost" id="back" ${step===0?'disabled style="opacity:.4"':''}>${T.back}</button></div></div>`;
+  app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{answers[step]=+b.dataset.v;step++;setTimeout(render,180);b.setAttribute('aria-pressed','true')});
+  document.getElementById('back').onclick=()=>{if(step>0){step--;render()}};
+}
+
+function radar(sc){
+  const T=t(),cx=230,cy=190,R=112,pt=(i,v,k=1)=>{const a=-Math.PI/2+i*Math.PI/3;return [cx+Math.cos(a)*(R*v/100)*k,cy+Math.sin(a)*(R*v/100)*k]};
+  const poly=vals=>vals.map((v,i)=>pt(i,v).join(',')).join(' ');
+  let g='';[25,50,75,100].forEach(r=>g+=`<polygon points="${DIMS.map((_,i)=>pt(i,r).join(',')).join(' ')}" fill="none" stroke="#d9d9d9" stroke-width="1"/>`);
+  DIMS.forEach((_,i)=>{const [x,y]=pt(i,100);g+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#d9d9d9"/>`});
+  g+=`<polygon points="${poly(DIMS.map(d=>EGYPT[d]))}" fill="#1a1a1a" fill-opacity=".12" stroke="#1a1a1a" stroke-width="2.5" stroke-dasharray="6 4"/>`;
+  g+=`<polygon points="${poly(DIMS.map(d=>sc[d]))}" fill="#006bff" fill-opacity=".3" stroke="#006bff" stroke-width="3"/>`;
+  DIMS.forEach((d,i)=>{const [x,y]=pt(i,sc[d]);g+=`<circle cx="${x}" cy="${y}" r="5" fill="#006bff"/>`;
+    const [lx,ly]=pt(i,100,1.2),c=Math.cos(-Math.PI/2+i*Math.PI/3),anc=Math.abs(c)<.2?'middle':c>0?'start':'end';
+    g+=`<text x="${lx}" y="${ly+5}" text-anchor="${anc}" font-size="15" fill="#1a1a1a">${T.dims[d].s}</text>`});
+  return `<svg class="radar" viewBox="0 0 460 390" role="img" aria-label="${T.radarTitle}" dir="ltr">${g}</svg>
+  <div class="legend"><span><i class="sw" style="background:#006bff"></i>${T.you}</span><span><i class="sw" style="background:#1a1a1a"></i>${T.egypt}</span></div>`;
+}
+
+function results(){
+  const T=t(),sc=scores();
+  const diff=DIMS.map(d=>({d,x:Math.abs(sc[d]-EGYPT[d])})).sort((a,b)=>a.x-b.x);
+  const cards=DIMS.map(d=>{
+    const D=T.dims[d],p=sc[d],e=EGYPT[d],df=p-e,L=level(p);
+    const cmp=Math.abs(df)<=10?T.same:df>0?T.higher(df):T.lower(-df);
+    return `<div class="card dim"><h3>${D.n}<span class="lvl">${T.lvl[L]}</span></h3>
+    <div class="row"><span>${T.you}</span><div class="track"><i style="width:${p}%;background:#006bff"></i></div><b>${p}%</b></div>
+    <div class="row"><span>${T.egypt}</span><div class="track"><i style="width:${e}%;background:#1a1a1a"></i></div><b>${e}%</b></div>
+    <div class="ends"><span>${D.lo}</span><span>${D.hi}</span></div>
+    <p>${D[L]}</p><p class="vs">${cmp}</p></div>`}).join('');
+  app.innerHTML=`<section class="hero" style="padding-top:20px"><h1>${T.resTitle}</h1></section>
+  <div class="card"><h2 style="font-size:24px;margin-bottom:6px">${T.radarTitle}</h2>${radar(sc)}
+  <p class="sum">${T.closest(T.dims[diff[0].d].n,T.dims[diff[5].d].n)}</p></div>
+  ${cards}
+  <p class="note">${T.disc}</p>
+  <p class="again"><button class="btn" id="again">${T.again}</button></p>`;
+  document.getElementById('again').onclick=()=>{answers.fill(null);step=-1;render();window.scrollTo(0,0)};
+  window.scrollTo(0,0);
+}
+
+/* ---------- Boot ---------- */
+document.getElementById('bEn').onclick=()=>setLang('en');
+document.getElementById('bAr').onclick=()=>setLang('ar');
+document.addEventListener('keydown',e=>{
+  if(step>=0&&step<Q.length&&/^[1-5]$/.test(e.key)){answers[step]=+e.key;step++;render()}
+});
+setLang('en');
+</script>
+</body>
+</html>
