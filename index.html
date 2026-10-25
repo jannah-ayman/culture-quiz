@@ -74,11 +74,11 @@ const EGYPT={pd:80,ind:13,ach:55,uai:55,lto:22,ivr:0};
 // rev = true means the answer is reversed (6 - answer) before scoring
 const Q=[
 {d:'pd',r:0,en:"I’d rather someone else decide who sits where or speaks first.",ar:"أفضّل أن يقرّر شخص آخر من يجلس أين ومن يتحدث أولًا."},
-{d:'ivr',r:0,en:"I buy small things on impulse.",ar:"أشتري أشياء صغيرة بدافع اللحظة."},
+{d:'ivr',r:0,en:"I buy small things on impulse.",ar:"أشتري أشياء صغيرة بشكل اندفاعي."},
 {d:'lto',r:1,en:"If it worked before, don’t change it.",ar:"ما دام الشيء قد نجح من قبل، فلا داعي لتغييره."},
 {d:'ach',r:0,en:"Free time feels wasted if it isn’t leading anywhere.",ar:"أشعر أن وقت الفراغ ضائع إذا لم يقدّني إلى شيء."},
 {d:'ind',r:1,en:"When I have good news, my family hears it first.",ar:"عندما يكون عندي خبر سار، تكون عائلتي أول من يعرفه."},
-{d:'uai',r:0,en:"A blank page worries me more than one with a template.",ar:"الصفحة الفارغة تقلقني أكثر من صفحة فيها قالب جاهز."},
+{d:'uai',r:0,en:"A blank page worries me more than one with a template.",ar:"الصفحة الفارغة تقلقني أكثر من صفحة بها قالب جاهز."},
 {d:'pd',r:1,en:"I’d ask a question in class even if it might sound silly.",ar:"أسأل في الصف حتى لو بدا سؤالي سخيفًا."},
 {d:'lto',r:1,en:"When things go wrong, I blame luck more than effort.",ar:"عندما تسوء الأمور، ألوم الحظ أكثر من الجهد."},
 {d:'ach',r:0,en:"I like knowing where I rank.",ar:"أحب أن أعرف ترتيبي بين الآخرين."},
@@ -90,7 +90,7 @@ const Q=[
 {d:'ach',r:1,en:"I’d choose fixed hours over great pay with long hours.",ar:"أفضّل ساعات عمل ثابتة على راتب ممتاز مع ساعات طويلة."},
 {d:'uai',r:0,en:"I double-check things before I commit to them.",ar:"أراجع الأمور مرتين قبل أن ألتزم بها."},
 {d:'ivr',r:0,en:"I laugh out loud in public without thinking about it.",ar:"أضحك بصوت عالٍ في الأماكن العامة دون تفكير."},
-{d:'ind',r:1,en:"I’d feel odd eating a big meal alone.",ar:"سأشعر بغرابة وأنا آكل وجبة كبيرة وحدي."}
+{d:'ind',r:1,en:"I’d feel odd eating a big meal alone.",ar:"سأشعر بالغرابة وأنا آكل وجبة كبيرة وحدي."}
 ];
 
 const TXT={
@@ -141,7 +141,7 @@ ar:{
  same:"قريب من مصر",higher:n=>`أعلى من مصر بمقدار ${n} نقطة`,lower:n=>`أقل من مصر بمقدار ${n} نقطة`,
  closest:(a,b)=>`أنت الأقرب إلى مصر في «${a}» والأبعد عنها في «${b}».`,
  again:"أعد الاختبار",
- disc:"هذا اختبار مبسّط للتسلية وليس اختبارًا علميًا معتمدًا. ثلاث عبارات لكل بُعد تعطي صورة تقريبية فقط. درجات مصر متوسطات وطنية من Hofstede Insights (Almutairi, Heller & Yen, 2020)، ولذلك لا تصف كل مصري، كما أن نتيجتك لا تصف كل شخص من بلدك.",
+ disc:"هذا اختبار مبسّط للتسلية وليس اختبارًا علميًا معتمدًا. ثلاث اسئلة لكل بُعد تعطي صورة تقريبية فقط. درجات مصر متوسطات وطنية من Hofstede Insights (Almutairi, Heller & Yen, 2020)، ولذلك لا تصف كل مصري، كما أن نتيجتك لا تصف كل شخص من بلدك.",
  dims:{
   pd:{n:"المسافة من السلطة",s:"المسافة من السلطة",lo:"مسطّحة",hi:"هرمية",
    low:"تفضّل الهياكل المسطّحة. ترتاح لمناقشة أصحاب السلطة وتتوقع من القادة أن يشرحوا قراراتهم.",
